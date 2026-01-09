@@ -1,0 +1,1 @@
+ALTER TABLE ai_bildirimler ADD COLUMN IF NOT EXISTS etki_yonu VARCHAR(20);

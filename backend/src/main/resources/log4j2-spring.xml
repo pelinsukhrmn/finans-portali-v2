@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="APP_NAME">finans-portali</Property>
+        <Property name="KAFKA_SERVERS">${env:SPRING_KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}</Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- JSON Console (for container log aggregators) -->
+        <Console name="JsonConsole" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+        </Console>
+
+        <!-- Rolling File Appender -->
+        <RollingFile name="RollingFile"
+                     fileName="${LOG_DIR}/${APP_NAME}.log"
+                     filePattern="${LOG_DIR}/${APP_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- Kafka Appender: Log4j2 → Kafka → OpenSearch pipeline -->
+        <Kafka name="KafkaAppender" topic="application-logs" syncSend="false" ignoreExceptions="true">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json"/>
+            <Property name="bootstrap.servers">${KAFKA_SERVERS}</Property>
+            <Property name="acks">0</Property>
+            <Property name="retries">0</Property>
+            <Property name="linger.ms">100</Property>
+            <Property name="batch.size">16384</Property>
+        </Kafka>
+
+        <!-- Async wrapper for Kafka (non-blocking) -->
+        <Async name="AsyncKafka" ignoreExceptions="true">
+            <AppenderRef ref="KafkaAppender"/>
+        </Async>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Application logs: DEBUG to Console + File + Kafka -->
+        <Logger name="com.finansportali" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="AsyncKafka"/>
+        </Logger>
+
+        <!-- Spring Web: INFO -->
+        <Logger name="org.springframework.web" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+        <!-- Hibernate SQL: WARN (suppress in prod) -->
+        <Logger name="org.hibernate.SQL" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Kafka client logs: ERROR only (very noisy) -->
+        <Logger name="org.apache.kafka" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>
