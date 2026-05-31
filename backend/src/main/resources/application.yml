@@ -73,6 +73,9 @@ management:
     web:
       exposure:
         include: health,info,metrics,prometheus
+  health:
+    mail:
+      enabled: false
   metrics:
     export:
       prometheus:
@@ -93,6 +96,12 @@ logging:
   level:
     com.finansportali: DEBUG
     org.springframework.web: INFO
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/finans-portali.log
 
 opensearch:
   host: ${OPENSEARCH_HOST:http://localhost:9200}
