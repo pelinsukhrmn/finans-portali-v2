@@ -8,11 +8,12 @@ receivers:
 
 processors:
   batch:
-    timeout: 1s
-    send_batch_size: 1024
+    timeout: 2s
+    send_batch_size: 512
+    send_batch_max_size: 1024
 
   memory_limiter:
-    limit_mib: 256
+    limit_mib: 512
     check_interval: 1s
 
 exporters:
