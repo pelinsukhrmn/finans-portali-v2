@@ -3,3 +3,6 @@ target/
 .idea/
 .vscode/
 .env
+logs/
+*.log
+dist/

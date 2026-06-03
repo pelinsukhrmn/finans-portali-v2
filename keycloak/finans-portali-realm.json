@@ -12,7 +12,7 @@
   "bruteForceProtected": true,
   "failureFactor": 5,
   "waitIncrementSeconds": 60,
-  "accessTokenLifespan": 3600,
+  "accessTokenLifespan": 1800,
 
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
