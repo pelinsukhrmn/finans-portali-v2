@@ -349,7 +349,8 @@ public class AiTavsiyeService {
     private String geminiCagir(String sistemMesaji, List<ChatMesaj> kronolojikMesajlar, String apiKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String url = GEMINI_URL + "?key=" + apiKey;
+        headers.set("x-goog-api-key", apiKey);
+        String url = GEMINI_URL;
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("systemInstruction", Map.of("parts", List.of(Map.of("text", sistemMesaji))));

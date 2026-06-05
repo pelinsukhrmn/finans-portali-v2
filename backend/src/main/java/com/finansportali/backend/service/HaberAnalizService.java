@@ -185,8 +185,9 @@ public class HaberAnalizService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-goog-api-key", apiKey);
 
-            String url = GEMINI_URL + "?key=" + apiKey;
+            String url = GEMINI_URL;
 
             Map<String, Object> body = new LinkedHashMap<>();
             body.put("systemInstruction",
