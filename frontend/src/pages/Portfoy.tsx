@@ -164,7 +164,7 @@ export default function Portfoy() {
                   <div className="text-lg font-bold text-gray-900">₺{fmt(p.toplamDeger)}</div>
                   <div className={`text-xs font-medium mt-0.5 flex items-center gap-1 ${pozitif ? 'text-green-600' : 'text-red-500'}`}>
                     {pozitif ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    {pozitif ? '+' : ''}₺{fmt(p.nominalGetiri)} ({pozitif ? '+' : ''}{fmt(p.nominalGetiriYuzde)}%)
+                    {pozitif ? '+' : '-'}₺{fmt(Math.abs(p.nominalGetiri))} ({pozitif ? '+' : ''}{fmt(p.nominalGetiriYuzde)}%)
                   </div>
                 </button>
               )
@@ -209,7 +209,7 @@ export default function Portfoy() {
                       <span className={`text-xs ${seciliPortfoy.nominalGetiri >= 0 ? 'text-green-700' : 'text-red-600'}`}>Nominal Getiri</span>
                     </div>
                     <p className={`text-lg font-bold ${seciliPortfoy.nominalGetiri >= 0 ? 'text-green-700' : 'text-red-600'}`}>
-                      {seciliPortfoy.nominalGetiri >= 0 ? '+' : ''}₺{fmt(seciliPortfoy.nominalGetiri)}
+                      {seciliPortfoy.nominalGetiri >= 0 ? '+' : '-'}₺{fmt(Math.abs(seciliPortfoy.nominalGetiri))}
                     </p>
                     <p className={`text-xs mt-1 font-medium ${seciliPortfoy.nominalGetiri >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       {seciliPortfoy.nominalGetiri >= 0 ? '▲' : '▼'} kar/zarar
@@ -284,7 +284,7 @@ export default function Portfoy() {
                                       </span>
                                     ) : <span className="text-gray-300 text-right block">—</span>}
                                   </td>
-                                  <td className={`px-4 py-3 text-right text-sm font-medium ${poz ? 'text-green-600' : 'text-red-500'}`}>{poz ? '+' : ''}₺{fmt(v.nominalKarZarar)}</td>
+                                  <td className={`px-4 py-3 text-right text-sm font-medium ${poz ? 'text-green-600' : 'text-red-500'}`}>{poz ? '+' : '-'}₺{fmt(Math.abs(v.nominalKarZarar))}</td>
                                   <td className="px-4 py-3 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                       <div className="w-16 bg-gray-100 rounded-full h-1.5"><div className="h-1.5 rounded-full bg-blue-500" style={{ width: `${Math.min(v.agirlik, 100)}%` }} /></div>

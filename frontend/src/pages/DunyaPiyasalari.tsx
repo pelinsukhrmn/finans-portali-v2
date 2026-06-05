@@ -188,47 +188,40 @@ export default function DunyaPiyasalari() {
         ))}
       </div>
 
-      {/* Endeks Tablosu */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-12 px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500">
-          <div className="col-span-4">Endeks</div>
-          <div className="col-span-2">Bölge</div>
-          <div className="col-span-2 text-right">Değer</div>
-          <div className="col-span-2 text-right">Günlük Değişim</div>
-          <div className="col-span-1 text-center">Durum</div>
-          <div className="col-span-1 text-center">Trend</div>
-        </div>
+      {/* Endeks Kartları */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filtreliEndeksler.map(e => {
+          const poz = e.gunlukDegisimYuzde >= 0
+          return (
+            <div key={e.sembol} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+              {/* Üst: bayrak + isim + durum */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{e.bayrak}</span>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm leading-tight">{e.sembol}</div>
+                    <div className="text-xs text-gray-400">{e.ulke}</div>
+                  </div>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${e.acikMi ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+                  {e.acikMi ? 'Açık' : 'Kapalı'}
+                </span>
+              </div>
 
-        {filtreliEndeksler.map((e, i) => (
-          <div key={e.sembol}
-            className={`grid grid-cols-12 px-4 py-3 items-center text-sm border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? '' : 'bg-gray-50/30'}`}>
-            <div className="col-span-4 flex items-center gap-3">
-              <span className="text-lg">{e.bayrak}</span>
-              <div>
-                <div className="font-semibold text-gray-900">{e.sembol}</div>
-                <div className="text-xs text-gray-500">{e.ulke}</div>
+              {/* Değer */}
+              <div className="text-xl font-bold text-gray-900 font-mono mb-1">
+                {e.deger.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+              </div>
+
+              {/* Değişim */}
+              <div className={`flex items-center gap-1.5 text-sm font-semibold ${poz ? 'text-green-600' : 'text-red-500'}`}>
+                {poz ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                <span>{poz ? '+' : ''}{e.gunlukDegisim.toFixed(2)}</span>
+                <span className="text-xs font-medium">({poz ? '+' : ''}{e.gunlukDegisimYuzde.toFixed(2)}%)</span>
               </div>
             </div>
-            <div className="col-span-2 text-xs text-gray-500">{BOLGE_LABEL[e.bolge as Bolge]}</div>
-            <div className="col-span-2 text-right font-mono font-medium text-gray-900">
-              {e.deger.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
-            </div>
-            <div className={`col-span-2 text-right font-medium ${e.gunlukDegisimYuzde >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-              <div>{e.gunlukDegisim >= 0 ? '+' : ''}{e.gunlukDegisim.toFixed(2)}</div>
-              <div className="text-xs">{e.gunlukDegisimYuzde >= 0 ? '+' : ''}{e.gunlukDegisimYuzde.toFixed(2)}%</div>
-            </div>
-            <div className="col-span-1 text-center">
-              <span className={`text-xs px-2 py-0.5 rounded-full ${e.acikMi ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                {e.acikMi ? 'Açık' : 'Kapalı'}
-              </span>
-            </div>
-            <div className="col-span-1 flex justify-center">
-              {e.gunlukDegisimYuzde >= 0
-                ? <TrendingUp className="w-4 h-4 text-green-500" />
-                : <TrendingDown className="w-4 h-4 text-red-400" />}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <p className="text-xs text-gray-400 mt-3 text-center">
