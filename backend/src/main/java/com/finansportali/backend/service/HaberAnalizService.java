@@ -202,7 +202,9 @@ public class HaberAnalizService {
             List<Map<String, Object>> candidates = (List<Map<String, Object>>) resp.getBody().get("candidates");
             if (candidates == null || candidates.isEmpty()) return null;
             Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+            if (content == null) return null;
             List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+            if (parts == null || parts.isEmpty()) return null;
             return (String) parts.get(0).get("text");
 
         } catch (Exception e) {

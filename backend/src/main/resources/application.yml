@@ -112,17 +112,17 @@ finans:
       url: https://www.tcmb.gov.tr/kurlar/today.xml
     collect-api:
       base-url: https://api.collectapi.com/economy
-      api-key: ${COLLECT_API_KEY:apikey 1Ub3SplXxFSVowj1lI0vys:4W5ZJMBGNASQkF0WWCBb4B}
+      api-key: ${COLLECT_API_KEY:}
     coingecko:
       base-url: https://api.coingecko.com/api/v3
     newsapi:
       base-url: https://newsapi.org/v2
-      api-key: ${NEWSAPI_KEY:2f93260f8c034dd8a7dfa041ee513174}
+      api-key: ${NEWSAPI_KEY:}
     gemini:
-      chat-key: ${GEMINI_CHAT_KEY:AIzaSyDablVeNd1I2ixKeVM7DA-pZuFAr3fs3eE}
-      portfolio-key: ${GEMINI_PORTFOLIO_KEY:AIzaSyC_UIllR7lRWh-0PiSW8uo5KpAr-B1KEK4}
-      dashboard-key: ${GEMINI_DASHBOARD_KEY:AIzaSyDrYjgzqirLWZLpi3GcarlaO0nKDGtMPDE}
-      news-key: ${GEMINI_NEWS_KEY:AIzaSyBJGFUZWia9tzU_ukdjyxcYrJNfPLy_xag}
+      chat-key: ${GEMINI_CHAT_KEY:}
+      portfolio-key: ${GEMINI_PORTFOLIO_KEY:}
+      dashboard-key: ${GEMINI_DASHBOARD_KEY:}
+      news-key: ${GEMINI_NEWS_KEY:}
   scheduler:
     tcmb-cron: "0 31 15 * * MON-FRI"
     kripto-cron: "0 0 */2 * * *"
