@@ -9,6 +9,9 @@ import Analiz from './pages/Analiz'
 import Ayarlar from './pages/Ayarlar'
 import GeriTest from './pages/GeriTest'
 import EkonomikTakvim from './pages/EkonomikTakvim'
+import EtkinSinirAnalizi from './pages/EtkinSinirAnalizi'
+import StressTesti from './pages/StressTesti'
+import TahminDefteri from './pages/TahminDefteri'
 import { useAuth } from './context/AuthContext'
 
 // Giriş gerektiren sayfa wrapper'ı
@@ -58,8 +61,11 @@ function App() {
           <Route path="/piyasa"   element={<PiyasaVerileri />} />
           <Route path="/analiz"   element={<Analiz />} />
           <Route path="/haberler" element={<Haberler />} />
-          <Route path="/geri-test" element={<GeriTest />} />
-          <Route path="/ekonomik-takvim" element={<EkonomikTakvim />} />
+          <Route path="/geri-test"        element={<GeriTest />} />
+          <Route path="/ekonomik-takvim"  element={<EkonomikTakvim />} />
+          <Route path="/etkin-sinir"      element={<EtkinSinirAnalizi />} />
+          <Route path="/stres-testi"      element={<StressTesti />} />
+          <Route path="/tahmin-defteri"   element={<TahminDefteri />} />
 
           {/* Ayarlar */}
           <Route path="/ayarlar" element={<Ayarlar />} />

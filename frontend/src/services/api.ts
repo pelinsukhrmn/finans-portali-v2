@@ -170,6 +170,23 @@ export const ekonomikTakvim = {
     api.get('/ekonomik-takvim', { params: { aralik, ulke, onem } }),
 }
 
+// ── Tahmin Defteri ────────────────────────────────────────────
+export const tahminler = {
+  listele: (kullaniciId: number) =>
+    api.get(`/tahminler?kullaniciId=${kullaniciId}`),
+  ekle: (kullaniciId: number, body: {
+    yatirimAraciId: number
+    hedefFiyat: number
+    mevcutFiyat?: number
+    hedefTarih: string
+    notlar?: string
+  }) => api.post(`/tahminler?kullaniciId=${kullaniciId}`, body),
+  durumGuncelle: (id: number, kullaniciId: number, durum: string) =>
+    api.put(`/tahminler/${id}/durum?kullaniciId=${kullaniciId}`, { durum }),
+  sil: (id: number, kullaniciId: number) =>
+    api.delete(`/tahminler/${id}?kullaniciId=${kullaniciId}`),
+}
+
 // ── Geri Test (Backtesting) ───────────────────────────────────
 export const geriTest = {
   calistir: (body: {
