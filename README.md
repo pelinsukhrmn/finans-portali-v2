@@ -105,19 +105,31 @@ git clone https://github.com/pelinsukhrmn/finans-portali-v2.git
 cd finans-portali-v2
 ```
 
-### 2. `.env` Dosyasını Düzenleyin
+### 2. `.env` Dosyasını Oluşturun
 
-Kök dizinde bir `.env` dosyası oluşturun (AI ve haber özellikleri için):
+Kök dizinde `.env` adında bir dosya oluşturun ve aşağıdaki değişkenleri kendi API anahtarlarınızla doldurun:
 
 ```bash
-GEMINI_API_KEY=your_gemini_api_key_here
+# Google Gemini AI (https://aistudio.google.com/app/apikey)
+GEMINI_CHAT_KEY=your_gemini_key
+GEMINI_PORTFOLIO_KEY=your_gemini_key
+GEMINI_DASHBOARD_KEY=your_gemini_key
+GEMINI_NEWS_KEY=your_gemini_key
+
+# CollectAPI - BİST hisse verileri (https://collectapi.com)
+COLLECT_API_KEY=apikey your_collect_api_key
+
+# NewsAPI - Haber akışı (https://newsapi.org)
+NEWSAPI_KEY=your_newsapi_key
+
+# E-posta bildirimleri (isteğe bağlı)
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
+MAIL_PASSWORD=your_gmail_app_password
 ```
 
-> API anahtarları olmadan da uygulama çalışır, yalnızca AI tavsiye ve haber özeti özellikleri devre dışı kalır.
+> **Not:** API anahtarları olmadan da uygulama çalışır; yalnızca AI tavsiye, BİST hisse verileri ve haber özeti özellikleri devre dışı kalır.
 
 ### 3. Tüm Servisleri Başlatın
 
@@ -356,12 +368,21 @@ docker compose logs db --tail=20
 
 ## Ortam Değişkenleri
 
-| Değişken | Açıklama |
-|----------|----------|
-| `GEMINI_API_KEY` | Google Gemini AI anahtarı — AI tavsiye için gerekli |
-| `MAIL_HOST` | SMTP sunucusu (varsayılan: smtp.gmail.com) |
-| `MAIL_USERNAME` | Bildirim e-postası gönderici adresi |
-| `MAIL_PASSWORD` | Gmail uygulama şifresi |
+`.env` dosyasına eklenmesi gereken değişkenler:
+
+| Değişken | Açıklama | Zorunlu |
+|----------|----------|---------|
+| `GEMINI_CHAT_KEY` | Google Gemini — AI sohbet asistanı | Hayır |
+| `GEMINI_PORTFOLIO_KEY` | Google Gemini — Portföy analizi | Hayır |
+| `GEMINI_DASHBOARD_KEY` | Google Gemini — Dashboard brifing | Hayır |
+| `GEMINI_NEWS_KEY` | Google Gemini — Haber analizi | Hayır |
+| `COLLECT_API_KEY` | CollectAPI — BİST hisse verileri | Hayır |
+| `NEWSAPI_KEY` | NewsAPI — Haber akışı | Hayır |
+| `MAIL_HOST` | SMTP sunucusu (varsayılan: smtp.gmail.com) | Hayır |
+| `MAIL_USERNAME` | Bildirim e-postası gönderici adresi | Hayır |
+| `MAIL_PASSWORD` | Gmail uygulama şifresi | Hayır |
+
+> **`.env` dosyası git'e eklenmez** (`.gitignore` ile korunur). Her geliştirici kendi anahtarlarıyla kendi `.env` dosyasını oluşturur.
 
 ---
 
