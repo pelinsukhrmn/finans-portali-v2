@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
-import { yatirimAraclari, piyasaVerileri } from '../services/api'
+import { yatirimAraclari, piyasaVerileri, takipListesi } from '../services/api'
 import { Search, TrendingUp, TrendingDown, ArrowUpDown, BarChart2, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 interface Araci { id: number; sembol: string; ad: string; tip: string }
 interface FiyatVerisi { yatirimAraciId: number; fiyat: number; degisimYuzde: number | null }
@@ -95,6 +96,7 @@ function RangeBar({ low, high, cur }: { low: number; high: number; cur: number }
 
 export default function PiyasaVerileri() {
   const navigate = useNavigate()
+  const { userId } = useAuth()
   const [veriler, setVeriler] = useState<Araci[]>([])
   const [fiyatlar, setFiyatlar] = useState<Map<number, FiyatVerisi>>(new Map())
   const [loading, setLoading] = useState(true)
@@ -102,6 +104,30 @@ export default function PiyasaVerileri() {
   const [ara, setAra] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('degisim')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const [takipEdilen, setTakipEdilen] = useState<Set<number>>(new Set())
+  const [takipYukleniyor, setTakipYukleniyor] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    if (!userId) return
+    takipListesi.kullanicinin(userId)
+      .then(r => setTakipEdilen(new Set(r.data.map((t: any) => t.yatirimAraciId))))
+      .catch(() => {})
+  }, [userId])
+
+  const takipToggle = async (araciId: number) => {
+    if (!userId) return
+    setTakipYukleniyor(prev => new Set(prev).add(araciId))
+    try {
+      if (takipEdilen.has(araciId)) {
+        await takipListesi.sil(userId, araciId)
+        setTakipEdilen(prev => { const s = new Set(prev); s.delete(araciId); return s })
+      } else {
+        await takipListesi.ekle(userId, araciId)
+        setTakipEdilen(prev => new Set(prev).add(araciId))
+      }
+    } catch {}
+    setTakipYukleniyor(prev => { const s = new Set(prev); s.delete(araciId); return s })
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -321,10 +347,16 @@ export default function PiyasaVerileri() {
                           <BarChart2 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          title="Takip listesine ekle"
-                          className="p-1.5 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-lg transition-colors"
+                          onClick={() => takipToggle(a.id)}
+                          disabled={takipYukleniyor.has(a.id)}
+                          title={takipEdilen.has(a.id) ? 'Takipten çıkar' : 'Takip listesine ekle'}
+                          className="p-1.5 hover:bg-yellow-50 rounded-lg transition-colors disabled:opacity-50"
                         >
-                          <Star className="w-3.5 h-3.5" />
+                          <Star className={`w-3.5 h-3.5 transition-colors ${
+                            takipEdilen.has(a.id)
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-400 hover:text-yellow-500'
+                          }`} />
                         </button>
                       </div>
                     </td>
