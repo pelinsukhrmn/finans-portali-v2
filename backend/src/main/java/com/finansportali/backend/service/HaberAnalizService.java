@@ -36,7 +36,7 @@ public class HaberAnalizService {
     private String mailFrom;
 
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     public String haberOzetiOlustur(String baslik, String icerik) {
         try {

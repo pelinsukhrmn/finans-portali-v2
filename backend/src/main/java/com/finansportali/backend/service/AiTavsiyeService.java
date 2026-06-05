@@ -49,7 +49,7 @@ public class AiTavsiyeService {
     private String dashboardApiKey;
 
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     public record TavsiyeSonuc(
             String cevap,
