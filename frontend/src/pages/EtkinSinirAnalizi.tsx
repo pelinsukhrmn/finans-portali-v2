@@ -77,8 +77,8 @@ export default function EtkinSinirAnalizi() {
       const bitis = new Date()
       const baslangic = new Date()
       baslangic.setDate(bitis.getDate() - aralik)
-      const bas = baslangic.toISOString().split('T')[0]
-      const bit = bitis.toISOString().split('T')[0]
+      const bas = baslangic.toISOString().replace('Z', '').split('.')[0]
+      const bit = bitis.toISOString().replace('Z', '').split('.')[0]
 
       const fiyatVerileri = await Promise.all(
         varliklar.map(v => piyasaVerileri.tarihsel(v.yatirimAraciId, bas, bit))
