@@ -25,6 +25,7 @@ public class PortfoyDto {
     public static class VarlikResponse {
         private Long id; private Long yatirimAraciId; private String sembol; private String enstrumanAdi;
         private BigDecimal miktar; private BigDecimal ortalamaMaliyet; private BigDecimal guncelFiyat;
-        private BigDecimal nominalKarZarar; private BigDecimal reelKarZarar; private BigDecimal agirlik; private BigDecimal beta; private String risk;
+        private BigDecimal nominalKarZarar; private BigDecimal reelKarZarar; private BigDecimal agirlik;
+        private BigDecimal gunlukDegisimYuzde; private BigDecimal beta; private String risk; private String tip;
     }
 }

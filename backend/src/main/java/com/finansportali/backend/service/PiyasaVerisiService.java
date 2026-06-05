@@ -65,6 +65,15 @@ public class PiyasaVerisiService {
             .map(PiyasaVerisi::getFiyat).orElse(BigDecimal.ZERO);
     }
 
+    public BigDecimal getGunlukDegisimYuzde(Long araciId) {
+        return repository.findTopByYatirimAraciIdOrderByVeriZamaniDesc(araciId)
+            .filter(p -> p.getAcilis() != null && p.getAcilis().compareTo(BigDecimal.ZERO) > 0)
+            .map(p -> p.getFiyat().subtract(p.getAcilis())
+                .multiply(BigDecimal.valueOf(100))
+                .divide(p.getAcilis(), 2, RoundingMode.HALF_UP))
+            .orElse(null);
+    }
+
     /** En çok yükselen hisseler */
     public List<PiyasaVerisiDto.Response> enCokYukselen(int limit) {
         return repository.findLatestByTip(EnstrumanTipi.HISSE).stream()

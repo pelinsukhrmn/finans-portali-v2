@@ -18,6 +18,8 @@ interface Varlik {
   guncelFiyat: number
   nominalKarZarar: number
   agirlik: number
+  gunlukDegisimYuzde: number | null
+  tip: string
 }
 
 interface Portfoy {
@@ -261,17 +263,27 @@ export default function Portfoy() {
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead><tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-100 bg-gray-50">
-                            <th className="px-4 py-2">Sembol</th><th className="px-4 py-2 text-right">Miktar</th><th className="px-4 py-2 text-right">Ort.Maliyet</th><th className="px-4 py-2 text-right">Güncel</th><th className="px-4 py-2 text-right">K/Z</th><th className="px-4 py-2 text-right">Ağırlık</th><th className="px-4 py-2"></th>
+                            <th className="px-4 py-2">Sembol</th><th className="px-4 py-2 text-right">Miktar</th><th className="px-4 py-2 text-right">Ort.Maliyet</th><th className="px-4 py-2 text-right">Güncel</th><th className="px-4 py-2 text-right">Günlük %</th><th className="px-4 py-2 text-right">K/Z</th><th className="px-4 py-2 text-right">Ağırlık</th><th className="px-4 py-2"></th>
                           </tr></thead>
                           <tbody className="divide-y divide-gray-50">
                             {seciliPortfoy.varliklar.map(v => {
                               const poz = v.nominalKarZarar >= 0
+                              const gdp = v.gunlukDegisimYuzde
+                              const gdpPoz = gdp !== null && gdp !== undefined ? gdp >= 0 : null
                               return (
                                 <tr key={v.id} className="hover:bg-gray-50">
                                   <td className="px-4 py-3"><div className="font-medium text-sm text-blue-600">{v.sembol}</div><div className="text-xs text-gray-400 truncate max-w-[100px]">{v.enstrumanAdi}</div></td>
                                   <td className="px-4 py-3 text-right text-sm text-gray-700">{fmt(v.miktar, 4)}</td>
                                   <td className="px-4 py-3 text-right text-sm text-gray-700">₺{fmt(v.ortalamaMaliyet)}</td>
                                   <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">₺{fmt(v.guncelFiyat)}</td>
+                                  <td className="px-4 py-3 text-right text-sm font-medium">
+                                    {gdp !== null && gdp !== undefined ? (
+                                      <span className={`inline-flex items-center gap-0.5 justify-end ${gdpPoz ? 'text-green-600' : 'text-red-500'}`}>
+                                        {gdpPoz ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                                        {gdpPoz ? '+' : ''}{fmt(gdp)}%
+                                      </span>
+                                    ) : <span className="text-gray-300 text-right block">—</span>}
+                                  </td>
                                   <td className={`px-4 py-3 text-right text-sm font-medium ${poz ? 'text-green-600' : 'text-red-500'}`}>{poz ? '+' : ''}₺{fmt(v.nominalKarZarar)}</td>
                                   <td className="px-4 py-3 text-right">
                                     <div className="flex items-center justify-end gap-2">

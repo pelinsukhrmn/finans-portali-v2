@@ -93,8 +93,10 @@ public class PortfoyService {
         PortfoyDto.VarlikResponse dto = new PortfoyDto.VarlikResponse();
         dto.setId(v.getId()); dto.setYatirimAraciId(v.getYatirimAraci().getId());
         dto.setSembol(v.getYatirimAraci().getSembol()); dto.setEnstrumanAdi(v.getYatirimAraci().getAd());
+        dto.setTip(v.getYatirimAraci().getTip().name());
         dto.setMiktar(v.getMiktar()); dto.setOrtalamaMaliyet(v.getOrtalamaMaliyet());
         dto.setGuncelFiyat(guncelFiyat); dto.setNominalKarZarar(kz); dto.setAgirlik(agirlik);
+        dto.setGunlukDegisimYuzde(piyasaVerisiService.getGunlukDegisimYuzde(v.getYatirimAraci().getId()));
         return dto;
     }
 }
