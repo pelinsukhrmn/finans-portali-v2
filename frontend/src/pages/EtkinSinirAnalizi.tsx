@@ -101,9 +101,9 @@ export default function EtkinSinirAnalizi() {
       const yillikStd = kesilen.map(g => stdSapma(g) * Math.sqrt(252))
 
       // Mevcut portföy ağırlıkları
-      const toplamDeger = varliklar.reduce((s, v) => s + (v.guncelDeger ?? 0), 0)
+      const toplamDeger = varliklar.reduce((s, v) => s + ((v.guncelFiyat ?? 0) * (v.miktar ?? 0)), 0)
       const mevcutAg = toplamDeger > 0
-        ? varliklar.map(v => (v.guncelDeger ?? 0) / toplamDeger)
+        ? varliklar.map(v => ((v.guncelFiyat ?? 0) * (v.miktar ?? 0)) / toplamDeger)
         : varliklar.map(() => 1 / varliklar.length)
 
       const n = varliklar.length

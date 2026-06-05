@@ -192,7 +192,7 @@ export default function Analiz() {
 - Yıllık Volatilite: %${istatistikler.volatilite ?? 'hesaplanamadı'}
 - MA20 Sinyali: ${istatistikler.maSignal ?? 'yetersiz veri'}
 Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli.`
-      const res = await aiAsistan.tavsiyeAl(soru, null as any)
+      const res = await aiAsistan.marketBriefing(soru)
       setAiYorum(res.data.cevap)
     } catch {
       setAiYorum('Gemini AI şu anda yanıt veremiyor. Lütfen tekrar deneyin.')

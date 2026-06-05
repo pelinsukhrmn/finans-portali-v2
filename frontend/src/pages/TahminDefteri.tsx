@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 
 interface Tahmin {
   id: number
+  yatirimAraciId: number
   sembol: string
   ad: string
   tip: string
@@ -52,7 +53,7 @@ export default function TahminDefteri() {
       const data: Tahmin[] = res.data
       // Mevcut fiyatları çek
       const guncel = await Promise.allSettled(
-        data.map(t => piyasaVerileri.sonByAraci(t.yatirimAraciId as any))
+        data.map(t => piyasaVerileri.sonByAraci(t.yatirimAraciId))
       )
       data.forEach((t, i) => {
         const r = guncel[i]

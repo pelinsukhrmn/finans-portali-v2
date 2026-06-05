@@ -42,15 +42,22 @@ export default function MarketSummaryBar() {
       .catch(() => {})
   }, [])
 
-  const saat = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  const now = new Date()
+  const saat = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  const tr = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Istanbul' }))
+  const gun = tr.getDay()
+  const dakika = tr.getHours() * 60 + tr.getMinutes()
+  const piyasaAcik = gun >= 1 && gun <= 5 && dakika >= 10 * 60 && dakika < 18 * 60
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 mb-5">
       <div className="flex items-center gap-4 overflow-x-auto scrollbar-none">
         {/* Market status */}
         <div className="flex items-center gap-2 shrink-0 pr-4 border-r border-gray-100">
-          <Activity className="w-3.5 h-3.5 text-green-500" />
-          <span className="text-xs font-semibold text-green-700">Piyasa Açık</span>
+          <Activity className={`w-3.5 h-3.5 ${piyasaAcik ? 'text-green-500' : 'text-gray-400'}`} />
+          <span className={`text-xs font-semibold ${piyasaAcik ? 'text-green-700' : 'text-gray-500'}`}>
+            {piyasaAcik ? 'Piyasa Açık' : 'Piyasa Kapalı'}
+          </span>
           <span className="text-xs text-gray-400">{saat}</span>
         </div>
 

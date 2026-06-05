@@ -73,7 +73,7 @@ export default function StressTesti() {
 
     const detay = await portfoyler.detay(seciliPortfoy)
     const varliklar: any[] = detay.data.varliklar ?? []
-    const toplamDeger: number = varliklar.reduce((s: number, v: any) => s + (v.guncelDeger ?? 0), 0)
+    const toplamDeger: number = varliklar.reduce((s: number, v: any) => s + ((v.guncelFiyat ?? 0) * (v.miktar ?? 0)), 0)
     setMevcutDeger(toplamDeger)
 
     const hesaplananSonuclar: SonucSatir[] = SENARYOLAR.map(senaryo => {
@@ -82,7 +82,7 @@ export default function StressTesti() {
         const tip: string = v.tip ?? 'HISSE'
         const getiriFn = TIP_GETIRI[tip] ?? TIP_GETIRI['HISSE']
         const getiri = getiriFn(senaryo)
-        stresliDeger += (v.guncelDeger ?? 0) * (1 + getiri)
+        stresliDeger += ((v.guncelFiyat ?? 0) * (v.miktar ?? 0)) * (1 + getiri)
       })
       const degisimYuzde = toplamDeger > 0 ? ((stresliDeger - toplamDeger) / toplamDeger) * 100 : 0
       return {
