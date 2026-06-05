@@ -12,6 +12,7 @@ import EkonomikTakvim from './pages/EkonomikTakvim'
 import EtkinSinirAnalizi from './pages/EtkinSinirAnalizi'
 import StressTesti from './pages/StressTesti'
 import TahminDefteri from './pages/TahminDefteri'
+import DunyaPiyasalari from './pages/DunyaPiyasalari'
 import { useAuth } from './context/AuthContext'
 
 // Giriş gerektiren sayfa wrapper'ı
@@ -65,7 +66,8 @@ function App() {
           <Route path="/ekonomik-takvim"  element={<EkonomikTakvim />} />
           <Route path="/etkin-sinir"      element={<EtkinSinirAnalizi />} />
           <Route path="/stres-testi"      element={<StressTesti />} />
-          <Route path="/tahmin-defteri"   element={<TahminDefteri />} />
+          <Route path="/tahmin-defteri"    element={<TahminDefteri />} />
+          <Route path="/dunya-piyasalari" element={<DunyaPiyasalari />} />
 
           {/* Ayarlar */}
           <Route path="/ayarlar" element={<Ayarlar />} />

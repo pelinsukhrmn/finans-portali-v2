@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Legend
+  ResponsiveContainer, ReferenceLine, Legend, ComposedChart, Area
 } from 'recharts'
 import { yatirimAraclari, piyasaVerileri, aiAsistan } from '../services/api'
 import { Search, TrendingUp, Activity, TrendingDown, Minus, Info, Sparkles, Loader2 } from 'lucide-react'
@@ -20,6 +20,10 @@ interface FiyatNoktasi {
   fiyat: number
   ma20?: number
   ma50?: number
+  bollingerUst?: number
+  bollingerAlt?: number
+  bollingerOrta?: number
+  rsi?: number
   karsilastirma?: number
 }
 
@@ -69,8 +73,39 @@ function hesaplaMA(veriler: FiyatNoktasi[]): FiyatNoktasi[] {
     const ma50 = i >= 49
       ? arr.slice(i - 49, i + 1).reduce((s, x) => s + x.fiyat, 0) / 50
       : undefined
-    return { ...v, ma20: ma20 ? parseFloat(ma20.toFixed(4)) : undefined,
-                     ma50: ma50 ? parseFloat(ma50.toFixed(4)) : undefined }
+
+    // Bollinger Bantları (20 periyot, 2 standart sapma)
+    let bollingerUst: number | undefined
+    let bollingerAlt: number | undefined
+    let bollingerOrta: number | undefined
+    if (ma20 !== undefined) {
+      const pencere = arr.slice(i - 19, i + 1).map(x => x.fiyat)
+      const std = Math.sqrt(pencere.reduce((s, x) => s + (x - ma20) ** 2, 0) / 20)
+      bollingerOrta = parseFloat(ma20.toFixed(4))
+      bollingerUst  = parseFloat((ma20 + 2 * std).toFixed(4))
+      bollingerAlt  = parseFloat((ma20 - 2 * std).toFixed(4))
+    }
+
+    // RSI (14 periyot)
+    let rsi: number | undefined
+    if (i >= 14) {
+      const degisimler = arr.slice(i - 13, i + 1).map((x, j, a) =>
+        j === 0 ? 0 : x.fiyat - a[j - 1].fiyat
+      ).slice(1)
+      const kazanc = degisimler.filter(d => d > 0).reduce((s, d) => s + d, 0) / 14
+      const kayip  = degisimler.filter(d => d < 0).reduce((s, d) => s + Math.abs(d), 0) / 14
+      rsi = kayip === 0 ? 100 : parseFloat((100 - 100 / (1 + kazanc / kayip)).toFixed(1))
+    }
+
+    return {
+      ...v,
+      ma20:          ma20 ? parseFloat(ma20.toFixed(4)) : undefined,
+      ma50:          ma50 ? parseFloat(ma50.toFixed(4)) : undefined,
+      bollingerUst,
+      bollingerAlt,
+      bollingerOrta,
+      rsi,
+    }
   })
 }
 
@@ -105,6 +140,8 @@ export default function Analiz() {
   const [karsilastirmaVerileri, setKarsilastirmaVerileri] = useState<FiyatNoktasi[]>([])
   const [loading, setLoading] = useState(false)
   const [maGoster, setMaGoster] = useState(true)
+  const [bollingerGoster, setBollingerGoster] = useState(false)
+  const [rsiGoster, setRsiGoster] = useState(false)
   const [karsilastirmaGoster, setKarsilastirmaGoster] = useState(false)
   const [karsilastirmaArama, setKarsilastirmaArama] = useState('')
   const [aiYorum, setAiYorum] = useState<string | null>(null)
@@ -326,15 +363,21 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
                   </div>
 
                   {/* MA toggle */}
-                  <button
-                    onClick={() => setMaGoster(!maGoster)}
-                    className={`px-3 py-1 text-xs rounded-lg border transition-colors ${
-                      maGoster
-                        ? 'bg-blue-50 border-blue-200 text-blue-700'
-                        : 'bg-white border-gray-200 text-gray-500'
-                    }`}
-                  >
+                  <button onClick={() => setMaGoster(!maGoster)}
+                    className={`px-3 py-1 text-xs rounded-lg border transition-colors ${maGoster ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-500'}`}>
                     MA20/MA50
+                  </button>
+
+                  {/* Bollinger toggle */}
+                  <button onClick={() => setBollingerGoster(!bollingerGoster)}
+                    className={`px-3 py-1 text-xs rounded-lg border transition-colors ${bollingerGoster ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-gray-200 text-gray-500'}`}>
+                    Bollinger
+                  </button>
+
+                  {/* RSI toggle */}
+                  <button onClick={() => setRsiGoster(!rsiGoster)}
+                    className={`px-3 py-1 text-xs rounded-lg border transition-colors ${rsiGoster ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-white border-gray-200 text-gray-500'}`}>
+                    RSI
                   </button>
 
                   {/* Karşılaştırma toggle */}
@@ -462,24 +505,17 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
                       {/* Hareketli ortalamalar */}
                       {maGoster && (
                         <>
-                          <Line
-                            type="monotone"
-                            dataKey="ma20"
-                            stroke="#f59e0b"
-                            strokeWidth={1.5}
-                            dot={false}
-                            strokeDasharray="4 2"
-                            name="MA20"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="ma50"
-                            stroke="#8b5cf6"
-                            strokeWidth={1.5}
-                            dot={false}
-                            strokeDasharray="6 3"
-                            name="MA50"
-                          />
+                          <Line type="monotone" dataKey="ma20" stroke="#f59e0b" strokeWidth={1.5} dot={false} strokeDasharray="4 2" name="MA20" />
+                          <Line type="monotone" dataKey="ma50" stroke="#8b5cf6" strokeWidth={1.5} dot={false} strokeDasharray="6 3" name="MA50" />
+                        </>
+                      )}
+
+                      {/* Bollinger Bantları */}
+                      {bollingerGoster && (
+                        <>
+                          <Line type="monotone" dataKey="bollingerUst" stroke="#6366f1" strokeWidth={1} dot={false} strokeDasharray="3 2" name="BB Üst" />
+                          <Line type="monotone" dataKey="bollingerOrta" stroke="#6366f1" strokeWidth={1} dot={false} opacity={0.5} name="BB Orta" />
+                          <Line type="monotone" dataKey="bollingerAlt" stroke="#6366f1" strokeWidth={1} dot={false} strokeDasharray="3 2" name="BB Alt" />
                         </>
                       )}
 
@@ -499,6 +535,33 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
                   </ResponsiveContainer>
                 )}
               </div>
+
+              {/* RSI Grafiği */}
+              {rsiGoster && (
+                <div className="bg-white rounded-xl border border-gray-200 p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-gray-900">RSI (14)</h4>
+                    <div className="flex gap-3 text-xs">
+                      <span className="text-red-500">Aşırı Alım: &gt;70</span>
+                      <span className="text-green-600">Aşırı Satım: &lt;30</span>
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <ComposedChart data={grafıkVerisi} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="tarih" tick={{ fontSize: 10 }} tickLine={false}
+                        interval={Math.floor(grafıkVerisi.length / 6)} />
+                      <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} width={30} />
+                      <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '8px' }}
+                        formatter={(v: number) => [v?.toFixed(1), 'RSI']} />
+                      <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="3 2" strokeWidth={1} />
+                      <ReferenceLine y={30} stroke="#22c55e" strokeDasharray="3 2" strokeWidth={1} />
+                      <ReferenceLine y={50} stroke="#9ca3af" strokeDasharray="2 2" strokeWidth={1} />
+                      <Line type="monotone" dataKey="rsi" stroke="#f43f5e" strokeWidth={1.5} dot={false} name="RSI" />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
               {/* Teknik Analiz Açıklaması */}
               {maGoster && (

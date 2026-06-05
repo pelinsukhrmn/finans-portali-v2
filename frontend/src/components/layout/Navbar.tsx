@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Search, TrendingUp, LogIn, LogOut, User, Settings, ChevronDown,
-         FlaskConical, ShieldAlert, BookOpen, BarChart2 } from 'lucide-react'
+         ShieldAlert, BookOpen, BarChart2, Globe } from 'lucide-react'
 import { yatirimAraclari } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import NotificationBell from './NotificationBell'
@@ -20,6 +20,7 @@ const ARACLAR_MENU = [
   { path: '/etkin-sinir',     label: 'Etkin Sınır Analizi',   icon: TrendingUp  },
   { path: '/stres-testi',     label: 'Kriz Stres Testi',      icon: ShieldAlert },
   { path: '/tahmin-defteri',  label: 'Tahmin Defteri',        icon: BookOpen    },
+  { path: '/dunya-piyasalari',label: 'Dünya Piyasaları',      icon: Globe       },
 ]
 
 const ARACLAR_PATHS = new Set(ARACLAR_MENU.map(a => a.path))
