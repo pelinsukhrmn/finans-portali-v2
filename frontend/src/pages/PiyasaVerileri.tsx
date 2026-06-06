@@ -253,9 +253,9 @@ export default function PiyasaVerileri() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-6">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Piyasa Verileri</h2>
           <p className="text-xs text-gray-400 mt-0.5">Gerçek zamanlı fiyat ve değişim bilgileri</p>
@@ -267,25 +267,27 @@ export default function PiyasaVerileri() {
             placeholder="Sembol veya isim ara..."
             value={ara}
             onChange={e => setAra(e.target.value)}
-            className="pl-9 pr-4 py-1.5 text-sm bg-white border border-gray-200 rounded-lg w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-9 pr-4 py-1.5 text-sm bg-white border border-gray-200 rounded-lg w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
 
       {/* Tab + Market Stats Bar */}
-      <div className="flex items-center justify-between mb-4 gap-4">
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <div className="overflow-x-auto scrollbar-none">
+          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5 w-max">
           {Object.entries(TAB_LABELS).map(([id, label]) => (
             <button
               key={id}
               onClick={() => { setTab(id); setAra('') }}
-              className={`px-4 py-1.5 text-sm rounded-md transition-colors font-medium ${
+              className={`px-3 py-1.5 text-xs sm:text-sm rounded-md transition-colors font-medium whitespace-nowrap ${
                 tab === id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               {label}
             </button>
           ))}
+          </div>
         </div>
 
         {!loading && (

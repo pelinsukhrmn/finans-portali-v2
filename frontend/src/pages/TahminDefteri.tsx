@@ -131,7 +131,7 @@ export default function TahminDefteri() {
     new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(v)
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 py-6">
+    <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       {/* Başlık */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

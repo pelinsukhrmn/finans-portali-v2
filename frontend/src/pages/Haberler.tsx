@@ -94,7 +94,7 @@ export default function Haberler() {
 
   if (loading) {
     return (
-      <div className="max-w-[1400px] mx-auto px-6 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="animate-pulse space-y-4">
           {[...Array(6)].map((_, i) => <div key={i} className="h-24 bg-gray-100 rounded-xl" />)}
         </div>
@@ -103,7 +103,7 @@ export default function Haberler() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-6">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="flex items-center justify-between mb-5">
         <div>
           <div className="flex items-center gap-2">

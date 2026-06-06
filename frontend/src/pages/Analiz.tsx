@@ -288,7 +288,7 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
   })() : null
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-6">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="flex items-center gap-3 mb-6">
         <Activity className="w-5 h-5 text-blue-600" />
         <h2 className="text-lg font-semibold text-gray-900">Tarihsel Analiz</h2>

@@ -121,14 +121,14 @@ export default function Portfoy() {
   })) ?? []
 
   if (loading) return (
-    <div className="max-w-[1400px] mx-auto px-6 py-6 animate-pulse space-y-4">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 animate-pulse space-y-4">
       <div className="h-8 bg-gray-100 rounded w-48" />
-      <div className="grid grid-cols-4 gap-4">{[...Array(4)].map((_,i) => <div key={i} className="h-24 bg-gray-100 rounded-xl" />)}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">{[...Array(4)].map((_,i) => <div key={i} className="h-24 bg-gray-100 rounded-xl" />)}</div>
     </div>
   )
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-6">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Portföy Yönetimi</h2>
         <button onClick={() => setYeniPortfoyModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">

@@ -109,7 +109,7 @@ export default function StressTesti() {
     new Intl.NumberFormat('tr-TR', { style: 'decimal', maximumFractionDigits: 3 }).format(v) + ' TL'
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-6">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <div className="flex items-center gap-3 mb-6">
         <ShieldAlert className="w-5 h-5 text-orange-500" />
         <h1 className="text-xl font-semibold text-gray-900">Kriz Stres Testi</h1>
