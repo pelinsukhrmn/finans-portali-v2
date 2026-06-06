@@ -39,17 +39,19 @@ public class AiTavsiyeService {
     private final PortfoyVarligiRepository portfoyVarligiRepository;
     private final PiyasaVerisiService piyasaVerisiService;
 
-    @Value("${finans.api.gemini.chat-key}")
+    @Value("${finans.api.groq.api-key}")
     private String chatApiKey;
 
-    @Value("${finans.api.gemini.portfolio-key}")
+    @Value("${finans.api.groq.api-key}")
     private String portfolioApiKey;
 
-    @Value("${finans.api.gemini.dashboard-key}")
+    @Value("${finans.api.groq.api-key}")
     private String dashboardApiKey;
 
-    private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    private static final String GROQ_URL =
+            "https://api.groq.com/openai/v1/chat/completions";
+
+    private static final String GROQ_MODEL = "llama-3.3-70b-versatile";
 
     public record TavsiyeSonuc(
             String cevap,
@@ -349,45 +351,37 @@ public class AiTavsiyeService {
     private String geminiCagir(String sistemMesaji, List<ChatMesaj> kronolojikMesajlar, String apiKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("x-goog-api-key", apiKey);
-        String url = GEMINI_URL;
+        headers.set("Authorization", "Bearer " + apiKey);
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("systemInstruction", Map.of("parts", List.of(Map.of("text", sistemMesaji))));
-
-        List<Map<String, Object>> contentsList = new ArrayList<>();
+        List<Map<String, Object>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content", sistemMesaji));
         for (ChatMesaj msg : kronolojikMesajlar) {
             String role = msg.getRol();
-            if (!role.equals("user") && !role.equals("model"))
-                role = role.equals("assistant") ? "model" : "user";
-            contentsList.add(Map.of("role", role, "parts", List.of(Map.of("text", msg.getIcerik()))));
+            if ("model".equals(role)) role = "assistant";
+            else if (!"user".equals(role) && !"assistant".equals(role)) role = "user";
+            messages.add(Map.of("role", role, "content", msg.getIcerik()));
         }
-        if (contentsList.isEmpty()) {
-            contentsList.add(Map.of("role", "user", "parts", List.of(Map.of("text", "Merhaba"))));
+        if (messages.size() == 1) {
+            messages.add(Map.of("role", "user", "content", "Merhaba"));
         }
-        body.put("contents", contentsList);
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("model", GROQ_MODEL);
+        body.put("messages", messages);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            ResponseEntity<Map> response = restTemplate.exchange(GROQ_URL, HttpMethod.POST, entity, Map.class);
             Map<String, Object> responseBody = response.getBody();
             if (responseBody == null) return "Yanıt alınamadı.";
 
-            List<Map<String, Object>> candidates = (List<Map<String, Object>>) responseBody.get("candidates");
-            if (candidates == null || candidates.isEmpty()) return "Yanıt yok.";
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+            if (choices == null || choices.isEmpty()) return "Yanıt yok.";
 
-            Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-            if (content == null) return "İçerik yok.";
+            Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+            if (message == null) return "İçerik yok.";
 
-            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-            if (parts == null || parts.isEmpty()) return "Parts yok.";
-
-            StringBuilder sb = new StringBuilder();
-            for (Map<String, Object> part : parts) {
-                Object txt = part.get("text");
-                if (txt != null) sb.append(txt);
-            }
-            return sb.toString();
+            return (String) message.get("content");
 
         } catch (Exception e) {
             log.error("[AI] API hatası: {}", e.getMessage());

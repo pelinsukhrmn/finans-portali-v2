@@ -118,11 +118,8 @@ finans:
     newsapi:
       base-url: https://newsapi.org/v2
       api-key: ${NEWSAPI_KEY:}
-    gemini:
-      chat-key: ${GEMINI_CHAT_KEY:}
-      portfolio-key: ${GEMINI_PORTFOLIO_KEY:}
-      dashboard-key: ${GEMINI_DASHBOARD_KEY:}
-      news-key: ${GEMINI_NEWS_KEY:}
+    groq:
+      api-key: ${GROQ_API_KEY:}
   scheduler:
     tcmb-cron: "0 31 15 * * MON-FRI"
     kripto-cron: "0 0 */2 * * *"

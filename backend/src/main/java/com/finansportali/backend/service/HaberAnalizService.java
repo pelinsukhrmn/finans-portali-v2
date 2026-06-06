@@ -29,14 +29,16 @@ public class HaberAnalizService {
     private final RestTemplate restTemplate;
     private final Optional<JavaMailSender> mailSender;
 
-    @Value("${finans.api.gemini.news-key}")
+    @Value("${finans.api.groq.api-key}")
     private String apiKey;
 
     @Value("${spring.mail.username:}")
     private String mailFrom;
 
-    private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    private static final String GROQ_URL =
+            "https://api.groq.com/openai/v1/chat/completions";
+
+    private static final String GROQ_MODEL = "llama-3.3-70b-versatile";
 
     public String haberOzetiOlustur(String baslik, String icerik) {
         try {
@@ -185,31 +187,27 @@ public class HaberAnalizService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("x-goog-api-key", apiKey);
-
-            String url = GEMINI_URL;
+            headers.set("Authorization", "Bearer " + apiKey);
 
             Map<String, Object> body = new LinkedHashMap<>();
-            body.put("systemInstruction",
-                    Map.of("parts", List.of(Map.of("text",
-                            "Sen bir Türk finans analistisin. Sadece istenen formatta kısa yanıtlar ver."))));
-            body.put("contents", List.of(
-                    Map.of("role", "user", "parts", List.of(Map.of("text", mesaj)))));
+            body.put("model", GROQ_MODEL);
+            body.put("messages", List.of(
+                    Map.of("role", "system", "content",
+                            "Sen bir Türk finans analistisin. Sadece istenen formatta kısa yanıtlar ver."),
+                    Map.of("role", "user", "content", mesaj)));
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            ResponseEntity<Map> resp = restTemplate.exchange(GROQ_URL, HttpMethod.POST, entity, Map.class);
 
             if (resp.getBody() == null) return null;
-            List<Map<String, Object>> candidates = (List<Map<String, Object>>) resp.getBody().get("candidates");
-            if (candidates == null || candidates.isEmpty()) return null;
-            Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-            if (content == null) return null;
-            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-            if (parts == null || parts.isEmpty()) return null;
-            return (String) parts.get(0).get("text");
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) resp.getBody().get("choices");
+            if (choices == null || choices.isEmpty()) return null;
+            Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+            if (message == null) return null;
+            return (String) message.get("content");
 
         } catch (Exception e) {
-            log.warn("[HABER_ANALIZ] Gemini API hatasi: {}", e.getMessage());
+            log.warn("[HABER_ANALIZ] Groq API hatasi: {}", e.getMessage());
             return null;
         }
     }
