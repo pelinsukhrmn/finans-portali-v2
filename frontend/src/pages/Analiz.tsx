@@ -195,7 +195,7 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
       const res = await aiAsistan.marketBriefing(soru)
       setAiYorum(res.data.cevap)
     } catch {
-      setAiYorum('Gemini AI şu anda yanıt veremiyor. Lütfen tekrar deneyin.')
+      setAiYorum('AI şu anda yanıt veremiyor. Lütfen tekrar deneyin.')
     } finally {
       setAiYorumLoading(false)
     }
@@ -573,13 +573,13 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
               )}
 
               {/* Teknik Sinyaller Özeti */}
-              {/* Gemini AI Grafik Yorumu */}
+              {/* AI Grafik Yorumu */}
               {istatistikler && (
                 <div className="bg-white rounded-xl border border-purple-100 p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-purple-500" />
-                      <h4 className="text-sm font-semibold text-gray-900">Gemini AI Grafik Yorumu</h4>
+                      <h4 className="text-sm font-semibold text-gray-900">AI Grafik Yorumu</h4>
                     </div>
                     <button
                       onClick={aiYorumAl}
@@ -598,7 +598,7 @@ Kısa, anlaşılır ve Türkçe bir teknik analiz yorumu yaz. 3-4 cümle yeterli
                     </div>
                   ) : (
                     <p className="text-xs text-gray-400">
-                      Seçili sembolün grafik verilerini Gemini AI ile analiz etmek için butona tıklayın.
+                      Seçili sembolün grafik verilerini AI ile analiz etmek için butona tıklayın.
                     </p>
                   )}
                 </div>

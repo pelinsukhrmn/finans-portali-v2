@@ -125,7 +125,7 @@ export default function Ayarlar() {
           <BrainCircuit className="w-5 h-5 text-blue-600" />
           <div>
             <p className="text-sm font-semibold text-gray-900">AI Haber Analizi</p>
-            <p className="text-xs text-gray-500">Yeni haberler portföyünüzü etkileyebilecekse Gemini AI sizi uyarır.</p>
+            <p className="text-xs text-gray-500">Yeni haberler portföyünüzü etkileyebilecekse AI sizi uyarır.</p>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export default function Ayarlar() {
         </div>
         <div className="flex items-start gap-2 text-xs text-blue-700">
           <BrainCircuit className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>Gemini AI, haberin portföyünüzdeki hangi varlığı etkileyebileceğini Türkçe olarak açıklar.</span>
+          <span>AI, haberin portföyünüzdeki hangi varlığı etkileyebileceğini Türkçe olarak açıklar.</span>
         </div>
         <div className="flex items-start gap-2 text-xs text-blue-700">
           <Mail className="w-4 h-4 shrink-0 mt-0.5" />

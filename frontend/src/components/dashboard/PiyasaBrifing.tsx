@@ -19,7 +19,7 @@ export default function PiyasaBrifing() {
       const res = await aiAsistan.marketBriefing(prompt)
       setBrifing(res.data.cevap)
     } catch {
-      setBrifing('Gemini AI şu anda yanıt veremiyor. Lütfen tekrar deneyin.')
+      setBrifing('AI şu anda yanıt veremiyor. Lütfen tekrar deneyin.')
     } finally {
       setLoading(false)
     }
@@ -47,7 +47,7 @@ export default function PiyasaBrifing() {
         </div>
       ) : (
         <p className="text-xs text-gray-400">
-          Günün piyasa özetini Gemini AI ile oluşturmak için butona tıklayın.
+          Günün piyasa özetini AI ile oluşturmak için butona tıklayın.
         </p>
       )}
 
