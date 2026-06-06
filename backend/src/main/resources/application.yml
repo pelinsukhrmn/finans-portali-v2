@@ -121,7 +121,7 @@ finans:
     groq:
       api-key: ${GROQ_API_KEY:}
   scheduler:
-    tcmb-cron: "0 31 15 * * MON-FRI"
+    tcmb-cron: "0 0 */4 * * MON-FRI"
     kripto-cron: "0 0 */2 * * *"
-    hisse-cron: "0 35 15 * * MON-FRI"
+    hisse-cron: "0 0 */3 * * MON-FRI"
     haber-cron: "0 */30 * * * *"

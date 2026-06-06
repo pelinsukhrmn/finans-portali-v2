@@ -30,11 +30,14 @@ public class DataScheduler {
     @CacheEvict(value = "piyasaVerileri", allEntries = true)
     public void kriptoGuncelle() { try { var s = coinGeckoService.kriptoGuncelle(); log.info("[SCHEDULER] Kripto: {} kayit", s.size()); } catch (Exception e) { log.error("[SCHEDULER] Kripto hata: {}", e.getMessage()); } }
 
-    @Scheduled(cron = "${finans.scheduler.hisse-cron:0 35 15 * * MON-FRI}")
+    @Scheduled(cron = "${finans.scheduler.hisse-cron:0 0 */3 * * MON-FRI}")
     @CacheEvict(value = "piyasaVerileri", allEntries = true)
     public void hisseGuncelle() {
-        try { var s = yahooFinanceService.hisseleriGuncelle(); log.info("[SCHEDULER] Yahoo hisse: {} kayit", s.size()); }
-        catch (Exception e) {
+        try {
+            var s = yahooFinanceService.hisseleriGuncelle();
+            log.info("[SCHEDULER] Yahoo hisse: {} kayit", s.size());
+            if (s.isEmpty()) throw new RuntimeException("Yahoo bos liste dondu");
+        } catch (Exception e) {
             log.warn("[SCHEDULER] Yahoo hata, CollectAPI deneniyor: {}", e.getMessage());
             try { var s = collectApiHisseService.hisseGuncelle(); log.info("[SCHEDULER] CollectAPI hisse: {} kayit", s.size()); }
             catch (Exception e2) { log.error("[SCHEDULER] Hisse hata: {}", e2.getMessage()); }
@@ -75,7 +78,16 @@ public class DataScheduler {
             Thread.sleep(2000);
             kriptoGuncelle();
             Thread.sleep(2000);
-            hisseGuncelle();
+            // Yahoo dene, bos gelirse direkt CollectAPI kullan
+            try {
+                var s = yahooFinanceService.hisseleriGuncelle();
+                log.info("[SCHEDULER] Yahoo hisse: {} kayit", s.size());
+                if (s.isEmpty()) throw new RuntimeException("Yahoo bos liste dondu");
+            } catch (Exception e) {
+                log.warn("[SCHEDULER] Yahoo hata, CollectAPI ile devam: {}", e.getMessage());
+                var s = collectApiHisseService.hisseGuncelle();
+                log.info("[SCHEDULER] CollectAPI hisse: {} kayit", s.size());
+            }
             Thread.sleep(2000);
             haberleriGuncelle();
             log.info("[SCHEDULER] Ilk yukleme tamamlandi.");
