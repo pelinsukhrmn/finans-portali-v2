@@ -45,6 +45,18 @@ public class DemoDataService implements ApplicationRunner {
                 .map(a -> piyasaRepo.countByYatirimAraciId(a.getId()) < 30)
                 .orElse(false); // CoinGecko data is live, don't override
 
+            boolean tahvilSeedGerekli = araciRepo.findBySembol("TR10Y")
+                .map(a -> piyasaRepo.countByYatirimAraciId(a.getId()) < 30)
+                .orElse(true);
+
+            boolean fonSeedGerekli = araciRepo.findBySembol("GARPF")
+                .map(a -> piyasaRepo.countByYatirimAraciId(a.getId()) < 30)
+                .orElse(true);
+
+            boolean viopSeedGerekli = araciRepo.findBySembol("F_XU0300626")
+                .map(a -> piyasaRepo.countByYatirimAraciId(a.getId()) < 30)
+                .orElse(true);
+
             if (hisseSeedGerekli) {
                 log.info("[DEMO] Hisse verisi eksik, yukleniyor...");
                 seedHisseler();
@@ -57,12 +69,25 @@ public class DemoDataService implements ApplicationRunner {
                 log.info("[DEMO] Kripto tarihsel verisi eksik, yukleniyor...");
                 seedKriptolar();
             }
+            if (tahvilSeedGerekli) {
+                log.info("[DEMO] Tahvil/bono verisi eksik, yukleniyor...");
+                seedTahvilBonolar();
+            }
+            if (fonSeedGerekli) {
+                log.info("[DEMO] Fon verisi eksik, yukleniyor...");
+                seedFonlar();
+            }
+            if (viopSeedGerekli) {
+                log.info("[DEMO] VIOP verisi eksik, yukleniyor...");
+                seedViop();
+            }
             if (haberRepo.count() < 5) {
                 log.info("[DEMO] Haber verisi eksik, yukleniyor...");
                 seedHaberler();
             }
 
-            if (!hisseSeedGerekli && !dovizSeedGerekli && !kriptoSeedGerekli) {
+            if (!hisseSeedGerekli && !dovizSeedGerekli && !kriptoSeedGerekli
+                    && !tahvilSeedGerekli && !fonSeedGerekli && !viopSeedGerekli) {
                 log.info("[DEMO] Yeterli tarihsel veri mevcut, seed atlaniyor.");
             } else {
                 log.info("[DEMO] Demo veri tamamlandi.");
@@ -106,6 +131,30 @@ public class DemoDataService implements ApplicationRunner {
         {"BNB/TRY", "BNB",        23580.0, 0.0004, 0.028},
         {"XRP/TRY", "XRP",           87.45, 0.0003, 0.032},
         {"SOL/TRY", "Solana",      7840.0, 0.0005, 0.038},
+    };
+
+    private static final Object[][] TAHVIL_BONOLAR = {
+        {"TR2Y",       "2 Yıllık Hazine Bonosu",          97.45, 0.0001, 0.004},
+        {"TR5Y",       "5 Yıllık Devlet Tahvili",         94.20, 0.0001, 0.005},
+        {"TR10Y",      "10 Yıllık Devlet Tahvili",        88.50, 0.0001, 0.006},
+        {"KIRA3Y",     "3 Yıllık Kira Sertifikası",       96.10, 0.0001, 0.004},
+        {"EUROBOND30", "Türkiye Eurobond 2030",            89.75, 0.0001, 0.005},
+    };
+
+    private static final Object[][] FONLAR = {
+        {"AKPF1", "Ak Portföy Para Piyasası Fonu",          2.4521, 0.0002, 0.003},
+        {"GARPF", "Garanti Portföy Hisse Senedi Fonu",      8.3240, 0.0003, 0.012},
+        {"YAPKRE","Yapı Kredi Para Piyasası Fonu",          3.1860, 0.0002, 0.003},
+        {"ISGPF", "İş Portföy Karma Fon",                 12.4530, 0.0003, 0.008},
+        {"TEBPF", "TEB Portföy Para Piyasası Fonu",         1.8920, 0.0002, 0.003},
+    };
+
+    private static final Object[][] VIOP_SOZLESMELERI = {
+        {"F_XU0300626",  "BIST30 Haziran 2026 Vadeli",    11240.0, 0.0003, 0.016},
+        {"F_USDTRY0626", "USD/TRY Haziran 2026 Vadeli",      37.85, 0.0003, 0.005},
+        {"F_EURTRY0626", "EUR/TRY Haziran 2026 Vadeli",      39.95, 0.0003, 0.006},
+        {"F_GARAN0626",  "GARAN Haziran 2026 Vadeli",       125.50, 0.0002, 0.015},
+        {"F_THYAO0626",  "THYAO Haziran 2026 Vadeli",       310.20, 0.0003, 0.018},
     };
 
     private static final String[][] HABERLER_DATA = {
@@ -182,6 +231,30 @@ public class DemoDataService implements ApplicationRunner {
         log.info("[DEMO] {} kripto seed edildi.", KRIPTOLAR.length);
     }
 
+    private void seedTahvilBonolar() {
+        for (Object[] t : TAHVIL_BONOLAR) {
+            YatirimAraci araci = getOrCreate((String) t[0], (String) t[1], EnstrumanTipi.TAHVIL_BONO);
+            piyasaRepo.saveAll(olusturTarihsel(araci, (double) t[2], (double) t[3], (double) t[4], 365));
+        }
+        log.info("[DEMO] {} tahvil/bono seed edildi.", TAHVIL_BONOLAR.length);
+    }
+
+    private void seedFonlar() {
+        for (Object[] f : FONLAR) {
+            YatirimAraci araci = getOrCreate((String) f[0], (String) f[1], EnstrumanTipi.FON);
+            piyasaRepo.saveAll(olusturTarihsel(araci, (double) f[2], (double) f[3], (double) f[4], 365));
+        }
+        log.info("[DEMO] {} fon seed edildi.", FONLAR.length);
+    }
+
+    private void seedViop() {
+        for (Object[] v : VIOP_SOZLESMELERI) {
+            YatirimAraci araci = getOrCreate((String) v[0], (String) v[1], EnstrumanTipi.VIOP);
+            piyasaRepo.saveAll(olusturTarihsel(araci, (double) v[2], (double) v[3], (double) v[4], 365));
+        }
+        log.info("[DEMO] {} VIOP sozlesmesi seed edildi.", VIOP_SOZLESMELERI.length);
+    }
+
     private void seedHaberler() {
         if (haberRepo.count() > 5) return;
         List<Haber> liste = new ArrayList<>();
@@ -248,6 +321,8 @@ public class DemoDataService implements ApplicationRunner {
             scale = value >= 10000 ? 2 : value >= 1 ? 4 : 6;
         } else if (tip == EnstrumanTipi.DOVIZ) {
             scale = value < 1 ? 6 : 4;
+        } else if (tip == EnstrumanTipi.FON) {
+            scale = 4;
         } else {
             scale = 2;
         }

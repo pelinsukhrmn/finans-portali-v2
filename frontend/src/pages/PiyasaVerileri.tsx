@@ -34,6 +34,27 @@ const DEMO_ARACLARI: Record<string, Araci[]> = {
     { id:19, sembol:'XRP/TRY', ad:'XRP', tip:'KRIPTO' },
     { id:20, sembol:'SOL/TRY', ad:'Solana', tip:'KRIPTO' },
   ],
+  TAHVIL_BONO: [
+    { id:21, sembol:'TR2Y',       ad:'2 Yıllık Hazine Bonosu',       tip:'TAHVIL_BONO' },
+    { id:22, sembol:'TR5Y',       ad:'5 Yıllık Devlet Tahvili',      tip:'TAHVIL_BONO' },
+    { id:23, sembol:'TR10Y',      ad:'10 Yıllık Devlet Tahvili',     tip:'TAHVIL_BONO' },
+    { id:24, sembol:'KIRA3Y',     ad:'3 Yıllık Kira Sertifikası',    tip:'TAHVIL_BONO' },
+    { id:25, sembol:'EUROBOND30', ad:'Türkiye Eurobond 2030',         tip:'TAHVIL_BONO' },
+  ],
+  FON: [
+    { id:26, sembol:'AKPF1', ad:'Ak Portföy Para Piyasası Fonu',          tip:'FON' },
+    { id:27, sembol:'GARPF', ad:'Garanti Portföy Hisse Senedi Fonu',      tip:'FON' },
+    { id:28, sembol:'YAPKRE',ad:'Yapı Kredi Para Piyasası Fonu',          tip:'FON' },
+    { id:29, sembol:'ISGPF', ad:'İş Portföy Karma Fon',                   tip:'FON' },
+    { id:30, sembol:'TEBPF', ad:'TEB Portföy Para Piyasası Fonu',         tip:'FON' },
+  ],
+  VIOP: [
+    { id:31, sembol:'F_XU0300626',  ad:'BIST30 Haziran 2026 Vadeli',    tip:'VIOP' },
+    { id:32, sembol:'F_USDTRY0626', ad:'USD/TRY Haziran 2026 Vadeli',   tip:'VIOP' },
+    { id:33, sembol:'F_EURTRY0626', ad:'EUR/TRY Haziran 2026 Vadeli',   tip:'VIOP' },
+    { id:34, sembol:'F_GARAN0626',  ad:'GARAN Haziran 2026 Vadeli',     tip:'VIOP' },
+    { id:35, sembol:'F_THYAO0626',  ad:'THYAO Haziran 2026 Vadeli',     tip:'VIOP' },
+  ],
 }
 
 interface ExtraData {
@@ -61,17 +82,39 @@ const DEMO_FIYATLAR: Record<string, ExtraData> = {
   'GBP/TRY': { fiyat: 46.50,    degisimYuzde:-0.18,  gunlukYuksek: 46.90, gunlukDusuk: 46.35, hacim:'—' },
   'JPY/TRY': { fiyat:  0.2432,  degisimYuzde: 0.12,  gunlukYuksek:  0.248, gunlukDusuk: 0.241, hacim:'—' },
   'CHF/TRY': { fiyat: 41.80,    degisimYuzde:-0.09,  gunlukYuksek: 42.10, gunlukDusuk: 41.65, hacim:'—' },
-  'BTC/TRY': { fiyat:2345670,   degisimYuzde: 1.74,  gunlukYuksek:2389000,gunlukDusuk:2298000,hacim:'42.3 Mr', piyasaDegeri:'46.2 Tr' },
-  'ETH/TRY': { fiyat:126400,    degisimYuzde:-0.58,  gunlukYuksek:129800, gunlukDusuk:124600, hacim:'18.7 Mr', piyasaDegeri:'15.3 Tr' },
-  'BNB/TRY': { fiyat: 23580,    degisimYuzde: 0.91,  gunlukYuksek: 24100, gunlukDusuk: 23200, hacim:'7.2 Mr',  piyasaDegeri:'3.4 Tr' },
-  'XRP/TRY': { fiyat:   87.45,  degisimYuzde: 1.33,  gunlukYuksek:  89.10, gunlukDusuk: 86.20, hacim:'12.1 Mr', piyasaDegeri:'4.8 Tr' },
-  'SOL/TRY': { fiyat:  7840,    degisimYuzde: 1.23,  gunlukYuksek: 8020,  gunlukDusuk: 7710,  hacim:'5.4 Mr',  piyasaDegeri:'1.2 Tr' },
+  'BTC/TRY':      { fiyat:2345670,  degisimYuzde: 1.74,  gunlukYuksek:2389000, gunlukDusuk:2298000, hacim:'42.3 Mr', piyasaDegeri:'46.2 Tr' },
+  'ETH/TRY':      { fiyat:126400,   degisimYuzde:-0.58,  gunlukYuksek:129800,  gunlukDusuk:124600,  hacim:'18.7 Mr', piyasaDegeri:'15.3 Tr' },
+  'BNB/TRY':      { fiyat: 23580,   degisimYuzde: 0.91,  gunlukYuksek: 24100,  gunlukDusuk: 23200,  hacim:'7.2 Mr',  piyasaDegeri:'3.4 Tr' },
+  'XRP/TRY':      { fiyat:   87.45, degisimYuzde: 1.33,  gunlukYuksek:  89.10, gunlukDusuk: 86.20,  hacim:'12.1 Mr', piyasaDegeri:'4.8 Tr' },
+  'SOL/TRY':      { fiyat:  7840,   degisimYuzde: 1.23,  gunlukYuksek:  8020,  gunlukDusuk: 7710,   hacim:'5.4 Mr',  piyasaDegeri:'1.2 Tr' },
+  'TR2Y':         { fiyat:  97.45,  degisimYuzde:-0.12,  gunlukYuksek:  97.80, gunlukDusuk: 97.20,  hacim:'—' },
+  'TR5Y':         { fiyat:  94.20,  degisimYuzde:-0.18,  gunlukYuksek:  94.65, gunlukDusuk: 93.90,  hacim:'—' },
+  'TR10Y':        { fiyat:  88.50,  degisimYuzde:-0.24,  gunlukYuksek:  89.10, gunlukDusuk: 88.10,  hacim:'—' },
+  'KIRA3Y':       { fiyat:  96.10,  degisimYuzde:-0.10,  gunlukYuksek:  96.40, gunlukDusuk: 95.85,  hacim:'—' },
+  'EUROBOND30':   { fiyat:  89.75,  degisimYuzde: 0.08,  gunlukYuksek:  90.20, gunlukDusuk: 89.40,  hacim:'—' },
+  'AKPF1':        { fiyat:   2.4521,degisimYuzde: 0.05,  gunlukYuksek:   2.46, gunlukDusuk:  2.44,  hacim:'—', piyasaDegeri:'2.1 Mr' },
+  'GARPF':        { fiyat:   8.3240,degisimYuzde: 0.42,  gunlukYuksek:   8.38, gunlukDusuk:  8.29,  hacim:'—', piyasaDegeri:'4.8 Mr' },
+  'YAPKRE':       { fiyat:   3.1860,degisimYuzde: 0.06,  gunlukYuksek:   3.19, gunlukDusuk:  3.18,  hacim:'—', piyasaDegeri:'1.5 Mr' },
+  'ISGPF':        { fiyat:  12.4530,degisimYuzde: 0.28,  gunlukYuksek:  12.50, gunlukDusuk: 12.42,  hacim:'—', piyasaDegeri:'3.2 Mr' },
+  'TEBPF':        { fiyat:   1.8920,degisimYuzde: 0.04,  gunlukYuksek:   1.895,gunlukDusuk:  1.890, hacim:'—', piyasaDegeri:'0.9 Mr' },
+  'F_XU0300626':  { fiyat: 11240,   degisimYuzde: 0.65,  gunlukYuksek: 11310,  gunlukDusuk:11180,   hacim:'0.84 Mn' },
+  'F_USDTRY0626': { fiyat:   37.85, degisimYuzde:-0.38,  gunlukYuksek:  38.10, gunlukDusuk: 37.72,  hacim:'0.32 Mn' },
+  'F_EURTRY0626': { fiyat:   39.95, degisimYuzde: 0.25,  gunlukYuksek:  40.20, gunlukDusuk: 39.80,  hacim:'0.18 Mn' },
+  'F_GARAN0626':  { fiyat:  125.50, degisimYuzde: 1.82,  gunlukYuksek: 127.00, gunlukDusuk:124.20,  hacim:'0.22 Mn' },
+  'F_THYAO0626':  { fiyat:  310.20, degisimYuzde: 2.14,  gunlukYuksek: 314.50, gunlukDusuk:306.80,  hacim:'0.15 Mn' },
 }
 
 type SortKey = 'sembol' | 'fiyat' | 'degisim' | 'gunlukYuksek'
 type SortDir = 'asc' | 'desc'
 
-const TAB_LABELS: Record<string, string> = { HISSE: 'Hisseler', DOVIZ: 'Döviz', KRIPTO: 'Kripto' }
+const TAB_LABELS: Record<string, string> = {
+  HISSE: 'Hisseler',
+  DOVIZ: 'Döviz',
+  KRIPTO: 'Kripto',
+  TAHVIL_BONO: 'Tahvil / Bono',
+  FON: 'Fonlar',
+  VIOP: 'VIOP',
+}
 
 function fmt(f: number) {
   if (f >= 1_000_000) return f.toLocaleString('tr-TR', { maximumFractionDigits: 0 })
@@ -294,9 +337,12 @@ export default function PiyasaVerileri() {
                 const deg = a.degisimYuzde ?? 0
                 const pozitif = deg > 0
                 const negatif = deg < 0
-                const tipRenk = a.tip === 'HISSE' ? 'bg-blue-50 text-blue-700'
-                  : a.tip === 'DOVIZ' ? 'bg-purple-50 text-purple-700'
-                  : 'bg-orange-50 text-orange-700'
+                const tipRenk = a.tip === 'HISSE'       ? 'bg-blue-50 text-blue-700'
+                  : a.tip === 'DOVIZ'       ? 'bg-purple-50 text-purple-700'
+                  : a.tip === 'KRIPTO'      ? 'bg-orange-50 text-orange-700'
+                  : a.tip === 'TAHVIL_BONO' ? 'bg-emerald-50 text-emerald-700'
+                  : a.tip === 'FON'         ? 'bg-teal-50 text-teal-700'
+                  : /* VIOP */               'bg-rose-50 text-rose-700'
                 return (
                   <tr key={a.id} className="hover:bg-blue-50/20 transition-colors group">
                     <td className="px-4 py-3.5">
