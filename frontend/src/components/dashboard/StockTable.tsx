@@ -4,11 +4,22 @@ import { yatirimAraclari, piyasaVerileri } from '../../services/api'
 interface Hisse { id: number; sembol: string; ad: string }
 interface FiyatVerisi { yatirimAraciId: number; fiyat: number; degisimYuzde: number | null }
 
+type Tab = 'HISSE' | 'DOVIZ' | 'KRIPTO' | 'TAHVIL_BONO' | 'FON' | 'VIOP'
+
+const TAB_LABELS: Record<Tab, string> = {
+  HISSE:      'Hisseler',
+  DOVIZ:      'Döviz',
+  KRIPTO:     'Kripto',
+  TAHVIL_BONO:'Tahvil/Bono',
+  FON:        'Fonlar',
+  VIOP:       'VIOP',
+}
+
 export default function StockTable() {
   const [hisseler, setHisseler] = useState<Hisse[]>([])
   const [fiyatlar, setFiyatlar] = useState<Map<number, FiyatVerisi>>(new Map())
   const [loading, setLoading] = useState(true)
-  const [tab, setTab] = useState<'HISSE' | 'DOVIZ' | 'KRIPTO'>('HISSE')
+  const [tab, setTab] = useState<Tab>('HISSE')
 
   useEffect(() => {
     setLoading(true)
@@ -38,20 +49,22 @@ export default function StockTable() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Piyasa</h2>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
-          {(['HISSE', 'DOVIZ', 'KRIPTO'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                tab === t ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {t === 'HISSE' ? 'Hisseler' : t === 'DOVIZ' ? 'Döviz' : 'Kripto'}
-            </button>
-          ))}
+      <div className="flex items-center justify-between mb-4 gap-2">
+        <h2 className="text-lg font-semibold text-gray-900 shrink-0">Piyasa</h2>
+        <div className="overflow-x-auto scrollbar-none">
+          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5 w-max">
+            {(Object.keys(TAB_LABELS) as Tab[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-3 py-1 text-xs rounded-md transition-colors whitespace-nowrap ${
+                  tab === t ? 'bg-white text-gray-900 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {TAB_LABELS[t]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -79,9 +92,9 @@ export default function StockTable() {
                     {f ? `₺${fmt(Number(f.fiyat))}` : '—'}
                   </td>
                   <td className={`px-4 py-3 text-xs text-right font-semibold ${
-                    deg === null   ? 'text-gray-400'
-                    : deg > 0     ? 'text-green-600'
-                    : deg < 0     ? 'text-red-500'
+                    deg === null ? 'text-gray-400'
+                    : deg > 0   ? 'text-green-600'
+                    : deg < 0   ? 'text-red-500'
                     : 'text-gray-400'
                   }`}>
                     {deg !== null ? `${deg > 0 ? '+' : ''}${deg.toFixed(2)}%` : '—'}
