@@ -1,173 +1,174 @@
 # Finans Portalı
 
-Türk piyasalarını (BİST hisse senetleri, döviz, kripto, tahvil/bono, fonlar, VIOP) gerçek zamanlı takip etmeye, portföy yönetimine ve AI destekli yatırım danışmanlığına odaklanan full-stack finansal portal uygulaması.
+A full-stack finance portal for tracking Turkish markets (BIST stocks, forex, crypto, bonds, funds, VIOP) in real time, managing a portfolio, and getting AI-assisted investment advice.
 
 ---
 
-## Gereksinimler
+## What it does
 
-Bilgisayarınızda yalnızca bunların kurulu olması yeterlidir:
+- **Market data** — BIST stocks, FX rates (TCMB), crypto (CoinGecko), and global indices, refreshed on a schedule by the backend.
+- **Portfolio management** — track holdings, cost basis, P&L, and asset weights.
+- **Portfolio analytics** — efficient frontier analysis, stress testing, and strategy backtesting.
+- **Price alerts and predictions** — set price alarms and keep a journal of price forecasts.
+- **AI investment advisor** — a chat-based advisor (Groq, running Llama 3.3 70B) that can discuss your portfolio, summarize news, and produce a daily market briefing.
+- **News and economic calendar** — aggregated news (NewsAPI, CollectAPI, RSS) with AI-generated summaries, plus an economic calendar.
+- **Notifications** — in-app and email notifications (e.g. for price alarms).
+- **Authentication** — login and two-factor authentication (TOTP) via Keycloak.
+
+## Tech stack
+
+**Backend** — Java 21, Spring Boot 3.2 (Web, Security, OAuth2 Resource Server, Data JPA, Cache, Mail), PostgreSQL, Flyway, Redis, Kafka, Log4j2 (JSON layout), springdoc-openapi (Swagger UI).
+
+**Frontend** — React 19 + TypeScript, Vite, Tailwind CSS, React Router, Recharts, keycloak-js, Axios.
+
+**Infrastructure** — Docker Compose, Keycloak, PostgreSQL, Redis, Kafka + Zookeeper, OpenSearch + OpenSearch Dashboards, OpenTelemetry Collector, Prometheus, Grafana, Nginx.
+
+## Architecture
+
+Everything runs as a set of Docker containers wired together by `docker-compose.yml`:
+
+- **backend** (Spring Boot, port 8080) — the API. Talks to Postgres for persistence, Redis for caching, and Kafka to ship logs.
+- **frontend** (React, served by Nginx on port 3000) — the SPA. Nginx proxies `/api/` and `/actuator/` to the backend so the browser only ever talks to one origin.
+- **db** (PostgreSQL) — primary datastore, schema managed with Flyway migrations. Also backs Keycloak's own storage.
+- **redis** — caching layer for the backend.
+- **keycloak** — identity provider. Handles login and TOTP-based 2FA for the app; its realm (`finans-portali`) is imported automatically from `keycloak/finans-portali-realm.json` on startup.
+- **kafka** / **zookeeper** — log pipeline. The backend emits structured JSON logs (Log4j2) that a Kafka consumer service forwards into OpenSearch.
+- **opensearch** / **opensearch-dashboards** — log storage and search/visualization.
+- **otel-collector** (OpenTelemetry Collector) — receives traces/metrics from the backend over OTLP and re-exports metrics for Prometheus to scrape.
+- **prometheus** — scrapes `/actuator/prometheus` on the backend as well as the OTel collector's exporter.
+- **grafana** — dashboards on top of the Prometheus data source, provisioned automatically from `grafana/provisioning`.
+
+External data providers integrated by the backend: TCMB (FX rates), CoinGecko (crypto), CollectAPI (BIST stock data and news), NewsAPI and RSS feeds (news), and Groq (AI advisor).
+
+## Requirements
+
+Only two things need to be installed locally:
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (24+)
 - [Git](https://git-scm.com)
 
-> Java, Node.js veya Maven kurmanıza gerek yoktur. Her şey Docker içinde derlenir.
+Java, Node.js, and Maven are not required — everything is built inside Docker.
 
----
+## Setup and running
 
-## Kurulum ve Çalıştırma
-
-### 1. Repoyu klonlayın
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/pelinsukhrmn/finans-portali-v2.git
 cd finans-portali-v2
 ```
 
-### 2. `.env` dosyası oluşturun
+### 2. Create a `.env` file
 
-Proje kök dizininde `.env` adında bir dosya oluşturun ve aşağıdaki içeriği yapıştırın:
+Create a file named `.env` in the project root with the following content:
 
 ```env
-# Groq AI — ücretsiz key alın: https://console.groq.com
+# Groq — free key at https://console.groq.com
 GROQ_API_KEY=your_groq_api_key_here
 
-# CollectAPI — BİST hisse verileri: https://collectapi.com
+# CollectAPI — BIST stock data: https://collectapi.com
 COLLECT_API_KEY=apikey your_collect_api_key_here
 
-# NewsAPI — haber akışı: https://newsapi.org
+# NewsAPI — news feed: https://newsapi.org
 NEWSAPI_KEY=your_newsapi_key_here
 
-# E-posta bildirimleri (isteğe bağlı — boş bırakılabilir)
+# Email notifications (optional — can be left blank)
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=
 MAIL_PASSWORD=
 ```
 
-> API anahtarları olmadan da uygulama çalışır. Yalnızca AI analiz ve haber bildirimleri devre dışı kalır.
+The app runs fine without these keys — only AI analysis and news notifications will be disabled.
 
-### 3. Uygulamayı başlatın
+### 3. Start the app
 
 ```bash
 docker compose up --build
 ```
 
-**İlk çalıştırmada** Docker imajları indirilip derlendiğinden **5–15 dakika** sürebilir. Sonraki başlatmalarda çok daha hızlı açılır.
+The first run can take **5–15 minutes** while Docker images are pulled and built. Subsequent starts are much faster.
 
-Terminalde aşağıdaki satırları gördüğünüzde uygulama hazırdır:
+The app is ready once you see these lines in the terminal:
 
 ```
 finans_backend   | Started FinansPortaliBackendApplication
 finans_frontend  | /docker-entrypoint.sh: Configuration complete
 ```
 
----
+## Accessing the app
 
-## Uygulamaya Erişim
+| Service | URL |
+|---|---|
+| Main application | http://localhost:3000 |
+| Swagger UI (API docs) | http://localhost:8080/swagger-ui.html |
+| Keycloak admin console | http://localhost:8180 |
+| Grafana (monitoring) | http://localhost:3001 |
+| OpenSearch Dashboards | http://localhost:5601 |
 
-Tarayıcınızdan aşağıdaki adresleri açın:
+### Credentials
 
-| Servis | Adres |
-|--------|-------|
-| **Ana Uygulama** | http://localhost:3000 |
-| **Swagger UI (API Docs)** | http://localhost:8080/swagger-ui.html |
-| **Keycloak Yönetim Paneli** | http://localhost:8180 |
-| **Grafana (İzleme)** | http://localhost:3001 |
-| **OpenSearch Dashboards** | http://localhost:5601 |
+**Application (http://localhost:3000):**
 
-### Giriş Bilgileri
+| User | Password | Role |
+|---|---|---|
+| `testuser` | `test123` | Standard user |
+| `admin` | `admin123` | Admin |
 
-**Uygulama (http://localhost:3000):**
+**Keycloak admin console (http://localhost:8180):**
 
-| Kullanıcı | Şifre | Rol |
-|-----------|-------|-----|
-| `testuser` | `test123` | Standart kullanıcı |
-| `admin` | `admin123` | Yönetici |
-
-**Keycloak Yönetim Paneli (http://localhost:8180):**
-
-| Kullanıcı | Şifre |
-|-----------|-------|
+| User | Password |
+|---|---|
 | `admin` | `admin` |
 
 **Grafana (http://localhost:3001):**
 
-| Kullanıcı | Şifre |
-|-----------|-------|
+| User | Password |
+|---|---|
 | `admin` | `admin` |
 
----
+## Two-factor authentication (2FA)
 
-## İki Faktörlü Kimlik Doğrulama (2FA)
+The app supports TOTP-based 2FA with Google Authenticator or Microsoft Authenticator.
 
-Uygulama, Google Authenticator ve Microsoft Authenticator ile TOTP (Time-based One-Time Password) desteklemektedir.
+To enable it:
+1. Log in to the app.
+2. Open the Keycloak account console: http://localhost:8180/realms/finans-portali/account
+3. Under **Signing In → Two-Factor Authentication**, scan the QR code with your authenticator app.
 
-2FA'yı etkinleştirmek için:
-1. Uygulamaya giriş yapın
-2. Keycloak hesap sayfasını açın: http://localhost:8180/realms/finans-portali/account
-3. **Signing In → Two-Factor Authentication** bölümünden Authenticator uygulamanızla QR kodu okutun
-
----
-
-## Durdurma
+## Stopping
 
 ```bash
-# Servisleri durdur (veriler korunur)
+# Stop services (data is kept)
 docker compose down
 
-# Servisleri durdur ve tüm verileri sıfırla
+# Stop services and wipe all data
 docker compose down -v
 ```
 
----
+## Troubleshooting
 
-## Mimari
-
-Uygulama aşağıdaki 13 Docker container'dan oluşur:
-
-| Container | Teknoloji | Port |
-|-----------|-----------|------|
-| `finans_frontend` | React + Nginx | 3000 |
-| `finans_backend` | Spring Boot 3 / Java 21 | 8080 |
-| `finans_db` | PostgreSQL 15 | 5434 |
-| `finans_redis` | Redis 7 | 6379 |
-| `finans_kafka` | Apache Kafka | 9092 |
-| `finans_zookeeper` | Zookeeper | 2181 |
-| `finans_keycloak` | Keycloak 23 | 8180 |
-| `finans_opensearch` | OpenSearch 2 | 9200 |
-| `finans_opensearch_dashboards` | OpenSearch Dashboards | 5601 |
-| `finans_otel_collector` | OpenTelemetry Collector | 4317 |
-| `finans_prometheus` | Prometheus | 9090 |
-| `finans_grafana` | Grafana | 3001 |
-
-**Log akışı:** `Log4j2 → Kafka → KafkaLogConsumerService → OpenSearch`
-
----
-
-## Sorun Giderme
-
-**Uygulama açılmıyorsa** şu portların başka bir program tarafından kullanılmadığından emin olun:
+**App doesn't come up** — make sure these ports aren't already in use by something else:
 `3000, 8080, 8180, 5434, 6379, 9092, 9200, 5601`
 
-**Logları incelemek için:**
+**Checking logs:**
 ```bash
 docker compose logs backend --tail=50
 docker compose logs frontend --tail=20
 ```
 
-**Kafka başlamıyorsa (stale node hatası):**
+**Kafka won't start (stale node error):**
 ```bash
 docker compose restart zookeeper
 docker compose start kafka
 ```
 
-**Keycloak giriş sorunu yaşanıyorsa:**
+**Keycloak login issues:**
 ```bash
 docker compose restart keycloak
 ```
 
-**Değişiklik yaptıktan sonra yeniden başlatmak için:**
+**Rebuilding after a code change:**
 ```bash
 docker compose up -d --build backend frontend
 ```
